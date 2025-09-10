@@ -1,0 +1,8 @@
+# Dependencias de Python para el script de análisis y graficación
+
+Este archivo lista las bibliotecas de Python necesarias para ejecutar el script de consulta, procesamiento y graficación de datos de Amazon Timestream. Para instalarlas, asegúrate de tener pip instalado y ejecuta el siguiente comando en tu terminal:
+```
+pip install -r requerimientos.txt
+boto3 
+pandas 
+matplotlib

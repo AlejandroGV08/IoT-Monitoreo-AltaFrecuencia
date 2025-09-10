@@ -1,0 +1,55 @@
+Guía de Configuración de Reglas en AWS IoT Core
+
+Esta guía detalla los pasos para configurar una regla en AWS IoT Core que permite enviar datos directamente desde los mensajes MQTT de tu ESP32 a Amazon Timestream, sin necesidad de una función Lambda intermedia. Esta configuración es fundamental para la metodología de AWS con Timestream y Python, que demostró resultados superiores.
+
+Requisitos Previos:
+*   Un dispositivo (Thing) ESP32 registrado en AWS IoT Core.
+*   Una base de datos y una tabla en Amazon Timestream ya creadas (consulta 'conofiguracion_timestream.txt` para más detalles).
+*   Permisos adecuados para AWS IoT Core y Amazon Timestream en tu cuenta AWS.
+
+Pasos para la Configuración de la Regla:
+
+1.  Acceder a AWS IoT Core:
+    *   Inicia sesión en la Consola de Administración de AWS.
+    *   Navega a AWS IoT Core.
+
+2.  Crear una Regla:
+    *   En el panel de navegación izquierdo, selecciona "Mensajes" y luego "Reglas".
+    *   Haz clic en "Crear regla".
+
+3.  Configurar las Propiedades de la Regla:
+    *   Nombre de la regla: Asigna un nombre descriptivo a tu regla (ej. `envio_timestream`).
+    *   Descripción de la regla: Proporciona una breve descripción de su función (ej. `Redirige mensajes del ESP32 a Amazon Timestream`).
+
+4.  Definir la Consulta de la Regla (SQL):
+    *   En la sección "Instrucción de consulta de la regla", ingresa la siguiente consulta SQL. Esta consulta selecciona todos los datos (`*`) del payload del mensaje MQTT y especifica el tópico al que tu ESP32 publicará los datos (ej. `esp32/data`).
+    ```
+    SELECT * FROM 'esp32/data'
+    ```
+    *   Asegúrate de que `'esp32/data'` coincida con el tópico MQTT configurado en tu código ESP32 para el ESP32 DevKit V1.
+
+5.  Configurar la Acción de la Regla:
+    *   En la sección "Acciones", haz clic en "Agregar acción".
+    *   Selecciona "Enviar un mensaje a Amazon Timestream".
+    *   Haz clic en "Configurar acción".
+
+6.  Configurar los Parámetros de Timestream:
+    *   Base de datos de Timestream: Selecciona la base de datos de Timestream que creaste previamente.
+    *   Tabla de Timestream: Selecciona la tabla dentro de esa base de datos.
+    *   Dimensiones: Las dimensiones son atributos que definen las características de tus datos. En tu caso, el ESP32 envía el `device_id` y el `value`. Configura las dimensiones para que Timestream pueda organizar tus datos correctamente. Por ejemplo:
+        *   Nombre de la dimensión: `device_id`
+        *   Valor de la dimensión: `${device_id}` (esto extrae el `device_id` del payload JSON del mensaje MQTT, si está presente).
+    *   Campo de medida: Este es el valor principal que estás midiendo. Si tu ESP32 envía un campo `value` en el JSON (como se espera para la señal senoidal), puedes configurarlo así:
+        *   Nombre de la medida: `sensor_value` (o el nombre que desees para el valor del sensor).
+        *   Valor de la medida: `${value}` (esto extrae el `value` del payload JSON).
+    *   Tipo de medida: Selecciona el tipo de dato (ej. `DOUBLE`).
+    *   Columna de marca de tiempo: Timestream asigna automáticamente una marca de tiempo al registro. Puedes dejar esto por defecto o especificar un campo si tu payload MQTT incluye una marca de tiempo específica.
+
+7.  Crear un Rol de IAM:
+    *   AWS IoT Core necesita permisos para escribir en Timestream. Si no tienes un rol de IAM existente con los permisos adecuados, selecciona "Crear un nuevo rol" y asígnale un nombre descriptivo (ej. `IoTRuleTimestreamRole`). AWS IoT Core creará automáticamente un rol con los permisos necesarios para la acción seleccionada.
+
+8.  Finalizar la Creación de la Regla:
+    *   Haz clic en "Agregar acción" para confirmar la configuración de Timestream.
+    *   Finalmente, haz clic en "Crear regla" para activar la regla en AWS IoT Core.
+
+Una vez que la regla esté activa, los mensajes MQTT publicados por tu ESP32 en el tópico especificado serán procesados por AWS IoT Core y los datos se insertarán directamente en tu tabla de Amazon Timestream.

@@ -1,0 +1,39 @@
+Guía de Configuración de Amazon Timestream
+
+Esta guía proporciona los pasos detallados para crear una base de datos y una tabla en Amazon Timestream, un servicio de base de datos optimizado para datos de series temporales. Esta es una parte fundamental de la metodología de AWS con Timestream y Python, que permite el almacenamiento eficiente y escalable de los datos de sensores de alta frecuencia.
+
+Requisitos Previos:
+*   Una cuenta activa en Amazon Web Services (AWS).
+*   Permisos adecuados para crear y gestionar recursos de Timestream.
+
+Pasos para Crear la Base de Datos:
+
+1.  Acceder a Amazon Timestream:
+    *   Inicia sesión en la Consola de Administración de AWS.
+    *   Navega a Amazon Timestream (puedes buscarlo en la barra de búsqueda).
+
+2.  Crear una Base de Datos:
+    *   En el panel de Timestream, haz clic en "Crear base de datos".
+    *   Tipo de base de datos: Selecciona "Base de datos estándar"f.
+    *   Nombre de la base de datos: Asigna un nombre único y descriptivo a tu base de datos (ej. `esp32_db`).
+    *   Opciones de cifrado: Puedes dejar la configuración por defecto o elegir una clave KMS personalizada si tienes requisitos de seguridad específicos.
+    *   Haz clic en "Crear base de datos".
+
+Pasos para Crear la Tabla:
+
+Una vez creada la base de datos, procederás a crear la tabla donde se almacenarán los datos de tu ESP32.
+
+1.  Navegar a la Base de Datos Creada:
+    *   Desde el panel de Timestream, selecciona la base de datos que acabas de crear.
+    *   Dentro de la vista de la base de datos, haz clic en "Crear tabla".
+
+2.  Configurar los Parámetros de la Tabla:
+    *   Nombre de la tabla: Asigna un nombre único y descriptivo para tu tabla (ej. `esp32_datos`).
+    *   Base de datos: Asegúrate de que la base de datos que creaste esté seleccionada.
+    *   Configuración de retención de datos: Esta es una característica clave de Timestream para optimizar el rendimiento y el costo. Configura los valores de la siguiente manera:
+        *   Retención de datos en memoria: `10 horas` (para consultas rápidas de datos recientes).
+        *   Retención de datos magnéticos: `1 año` (para almacenamiento histórico a largo plazo y más económico).
+    *   Opciones de cifrado: Puedes mantener la configuración por defecto o personalizarla.
+    *   Haz clic en "Crear tabla".
+
+Una vez que la base de datos y la tabla estén creadas, Amazon Timestream estará listo para recibir y almacenar los datos de tu ESP32 a través de la regla de AWS IoT Core .
