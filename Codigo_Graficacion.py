@@ -4,9 +4,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta, timezone
 
-AWS_REGION = 'us-east-2' 
-DATABASE_NAME = 'esp32_iot_data' 
-TABLE_NAME = 'sensor_readings'  
+AWS_REGION = ' ' 
+DATABASE_NAME = ' ' 
+TABLE_NAME = ' '  
 
 end_time = datetime.now(timezone.utc)
 start_time = end_time - timedelta(seconds=15) 
